@@ -20,7 +20,8 @@ class Query
      * Sao consideradas como turmas abertas somente as turmas com
      * data de encerramento posterior a data de hoje.
      */
-    $hoje = date("Y-m-d");
+    //$hoje = date("Y-m-d");
+    $hoje = date('Y-m-d', strtotime('10 January 2023'));
     $query = "
       SELECT
         o.codofeatvceu
@@ -88,21 +89,23 @@ class Query
      * Sao consideradas como tumras abertas somente as turmas com
      * data de encerramento posterior a data de hoje.
      */
-    $hoje = date("Y-m-d");
+ 
     $query = "
-      SELECT 
-        ma.codofeatvceu,
-        mc.codpes,
-        p.nompes
-      FROM dbo.MATRICULAATIVIDADECEU ma
-      INNER JOIN	
-        dbo.MATRICULACURSOCEU mc
-        ON mc.codmtrcurceu = ma.codmtrcurceu
-      INNER JOIN
-        dbo.PESSOA p 
-        ON mc.codpes = p.codpes
-      WHERE ma.codofeatvceu = $codofeatvceu
-    ";
-    return USPDatabase::fetchAll($query);
-  }
-}
+        SELECT 
+          ma.codofeatvceu,cd
+          mc.codpes,
+          p.nompes,
+          em.codema
+        FROM dbo.MATRICULAATIVIDADECEU ma
+        INNER JOIN	
+          dbo.MATRICULACURSOCEU mc
+          ON mc.codmtrcurceu = ma.codmtrcurceu
+        INNER JOIN
+          dbo.PESSOA p 
+          ON mc.codpes = p.codpes 
+          INNER JOIN	
+          dbo.EMAILPESSOA em
+        ON em.codpes = mc.codpes Where em.codema LIKE '%@usp.br%' AND ma.codofeatvceu = $codofeatvceu";
+        return USPDatabase::fetchAll($query);
+      }
+    }
