@@ -1,8 +1,8 @@
 <?php 
 
 // Neste código são criadas as inscrições dos estudantes de acordo com o seu curso, o objetivo é que ao criar o curso sejam importadas automaticamente 
-// as informações dos alunos, de modo que, o aluno recebe um e-mail com o convite para acessar a plataforma do curso caso já possua cadastro, se não
-// ele recebe um e-mail convocando a sua autoinscrição. 
+// as informações dos alunos, de modo que, o aluno recebe um e-mail com o convite para acessar a plataforma do curso caso já possua cadastro, se nao
+// ele recebe um e-mail convocando a sua autoinscricao. 
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 global $USER, $PAGE, $OUTPUT;
@@ -25,10 +25,6 @@ use block_extensao\Service\Query;
 
 echo "$CFG->dirroot/user/lib.php";
 
-echo "Socorro!";
-
-
-
 // funcao que obtem os alunos na base de dados do moodle
 function obter_alunos(){
     global $DB;
@@ -36,7 +32,6 @@ function obter_alunos(){
     $data = $DB->get_records('extensao_aluno', array('id_moodle'=>NULL));
     return $data;
  }
-
 
 function obtem_usuario($field, $value) {
     global $DB;
@@ -73,23 +68,31 @@ function cadastra_usuario($alunos) {
         }
     }
 }
-$alunos = obter_alunos();
 
-echo "<pre>/";
-var_dump($alunos);
-/*
-echo cadastra_usuario ($alunos);
-/*
 // Funcao para matricular os alunos no curso conforme o codigo de oferecimento
 
 function matricula_usuario($alunos) {
     foreach($alunos as $estudante) {
-        $curso = $estudante->codofeatvceu;
-        $matricula = $estudante->codpes;
-        $base = array('field' => 'username', 'value' => $estudante->codpes);
-        $existematricula = 
-        enrol_self_enrol_user($curso, $matricula)
+        $courseid = $estudante->codofeatvceu;
+        $nome = $estudante->nome;
+        $userid = $estudante->codpes;
+        $role = 5;
+        $timeenrolled = time();
+        $estudante_matriculado = enrol_self_enrol_user($cucourseid, $userid, $role, $timeenrolled);
+        echo "O aluno " . $nome . " foi matriculado com Sucesso!";
+        if ($estudante_matriculado === false) {
+            // Tratamento de erro caso a funcao enrol_self_enrol_user() retorne false
+            echo ("Erro ao matricular o usuário " . $nome . ". <br>");
+        }
+    }
 }
 
+echo "<pre>/";
 
+$alunos = obter_alunos();
+
+var_dump($alunos);
+echo cadastra_usuario ($alunos);
+matricula_usuario($alunos);
+echo "foi!";
 
